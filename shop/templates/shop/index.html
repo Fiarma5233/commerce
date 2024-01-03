@@ -1,0 +1,153 @@
+{% extends "shop/base.html" %}
+
+{% block content %} 
+
+<!--Pour ajouter un champ et du bouton de recherche -->
+    <div class="row">
+        <div class="col-md-12">
+            <form action="" class="card card-sm">
+                <div class="card-body row no-gutters align-items-center">
+
+                    <!--Pour ajouter un champ  de recherche -->
+
+                    <div class="col">
+                        <input type="search" placeholder="Entrez le nom  du produit que vous recherchez" name="item-name" class="form-control form-control-borderless">
+                    </div>
+
+                     <!--Pour ajouter un bouton  de recherche -->
+
+                     <div class="col-auto">
+                        <button type="submit" class="btn btn-success">Rechercher</button>
+                     </div>
+
+                </div>                
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <!--Affichaches des produits-->
+    <div class="row">
+
+        {% for product in product_object %}
+        <div class="col-md-3">
+            <div class="card">
+
+                <img src="{{ product.image }}" width="300px" height="300px" alt="" class="card-img-top">
+
+                <div class="card-body">
+                    <div id="aa{{  product.id }}" class="card-title">{{ product.title }}</div>
+                    <div id="price{{ product.id}}" style="color: red;" class="card-text">{{ product.price }} <h2>fcfa</h2></div>
+                    <a href="{{ product.id }}" class="btn btn-warning">Voir </a>
+                    <button id="{{ product.id }}" class="btn ted btn-success">Ajouter</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!--Pour la pagination-->
+    <div class="row mt-3">
+        <div class="col-md-3 offset-md-4"></div>
+        <ul class="pagination">
+
+            {% if product_object.has_previous %} <!--Si les produits qu'on affiche ont une partie precedente-->
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ product_object.previous_page_number }}"> Precedent</a>
+
+                </li>
+
+            {% endif %}
+
+            <!--Pour montrer la page active -->
+            <li class="page-item active">
+                <a class="page-link" href="?page={{ product_object.number }}"> {{ product_object.number }}</a>
+
+
+            </li>
+
+            {% if product_object.has_next %} <!--Si les produits qu'on affiche ont une partie suivante-->
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ product_object.next_page_number }}"> Suivant</a>
+
+                </li>
+
+            {% endif %}
+
+        </ul>
+
+    </div>
+{% endblock %}
+
+<!--Pour ecrire du code js-->
+{% block js %}
+
+    <script type="text/javascript" >
+        console.log('juste pour tester');
+
+        if(localStorage.getItem('panier') == null){
+            var panier = {}; // ici panier est une variable de notre code
+        }else{
+            panier = JSON.parse(localStorage.getItem('panier'));// ici panier est une variable du local storage
+        }
+        
+                // Pour recuperer chaque clique que l'utilisateur va effectuer sur le bouton Ajouter . son id= ted
+
+        $(document).on('click', '.ted', function(){
+            console.log('ajouter');
+            var item_id = this.id.toString(); //Recuperer l'id et le transformer en string
+            console.log(item_id);
+            // Prendre l'id et l'assossier au nombre de foi qu'on clique sur la dessu
+            if(panier[item_id] != undefined){ // si on avait deja cliquer sur le produit ayant cet id
+                quantite = panier[item_id][0] +1;
+                panier[item_id][0] = quantite; 
+                panier[item_id][2] += parseFloat( document.getElementById('price'+item_id).innerHTML); // on recupere le prix du produit
+
+            }else{ //sinon si c'est la premiere fois qu'on clique dessus 
+                quantite = 1; //le nombre de fois est 1
+                prix =  parseFloat( document.getElementById('price'+item_id).innerHTML);
+                nom = document.getElementById('aa'+item_id).innerHTML;
+                panier[item_id] = [quantite , nom, prix];
+            }
+            console.log(panier);
+
+            localStorage.setItem('panier', JSON.stringify(panier));
+            //console.log(Object.keys(panier).length); // on recupere la longuer du panier qui se fait parropt aux cles
+
+            //on recupere l'id='panier' dans base.html 
+            document.getElementById("panier").innerHTML = "panier ( " + Object.keys(panier).length + " )";
+
+
+
+        });
+
+        /*$(function () {
+            $('[data-toggle="popover"]').popover();
+            document.getElementById('panier').setAttribute('data-content', '<h1>Voici votre liste </h1>');
+        })*/
+
+        AfficherList(panier);
+        function AfficherList(panier){
+            var panierString = "";
+
+            panierString += '<h4>Voici votre liste </h4>';
+
+            var index = 1; // Pour ordonner les prouit
+            for(var x in panier){
+                panierString += index;
+                panierString += document.getElementById('aa'+x).innerHTML + "   Quantity :" + panier[x][0] + "<br>";
+                index +=1; // incrementation
+            }
+
+            panierString += "<a href='/checkout' class='btn btn-primary'>Voir le detail du panier </a> ";
+
+            $('[data-toggle="popover"]').popover();
+            document.getElementById('panier').setAttribute('data-content', panierString);
+     
+        }
+
+    </script>
+
+{% endblock %}

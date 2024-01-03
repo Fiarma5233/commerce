@@ -1,0 +1,36 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+
+    <div class="row"> <!-- Tout se tiendra sur une seule ligne-->
+
+        <!--Cette partie c'est pour l'affichage de l'image-->
+        <div class="col-md-6"> <!--On divise la ligne en 2 colone. cette premiere colonne est pour l'image-->
+            <div>
+                <img src="{{ product.image }}" width="500px" height="500px" alt="">
+            </div>
+        </div>
+        <!--Fin de la colonne pour l'image-->
+
+        <div class="col-md-6"> <!--cette seconde colonne c'est pour les informations sur le produit-->
+            
+            <div class="text-warning display-3"> <!--Ici, c'est pour le titre du produit-->
+                {{ product.title }}
+            </div>
+
+            <div class="text-danger"> <!--Ici, c'est pour le prix du produit-->
+                Prix: {{ product.price }} fcfa
+            </div>
+
+            <div> <!--Ici, c'est pour la description du produit-->
+                {{ product.description }}
+            </div>
+
+            <a href="#"><button class="btn btn-success">Acheter</button></a>
+
+        </div>        <!--Fin de la colonne pour les infos du produit>
+
+
+    </div>
+
+{% endblock %}
